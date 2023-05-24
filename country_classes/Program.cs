@@ -135,6 +135,7 @@ namespace country_classes
         int money;
         int minerals;
         int oil;
+        Exception noMoney = new Exception("out of money");
         // kredits
         public string Name
         {
@@ -258,7 +259,7 @@ namespace country_classes
         {
             if (this.money < -5000)
             {
-                throw new Exception("run out of money");
+                throw noMoney;
             }
         }
         public void AutoOilBuy()
@@ -306,9 +307,27 @@ namespace country_classes
             }*/
             
         }
-        public void BuyOil(Alliance country)
+        public void BuyOil(int number = 1)
         {
-          
+            string path = "oilPrice.json";
+            string json = File.ReadAllText(path);
+            Dictionary<string, int> dictionary = JsonSerializer.Deserialize<Dictionary<string, int>>(json);
+            int price = dictionary[Convert.ToString(this.ideology)];
+            this.money -= price * number;
+            this.oil+= number;
+            
+            
+        }
+        public void BuyMinerals(int number = 1)
+        {
+            string path = "mineralsPrice.json";
+            string json = File.ReadAllText(path);
+            Dictionary<string, int> dictionary = JsonSerializer.Deserialize<Dictionary<string, int>>(json);
+            int price = dictionary[Convert.ToString(this.ideology)];
+            this.money -= price * number;
+            this.oil += number;
+            
+            
         }
 
 
@@ -333,7 +352,10 @@ namespace country_classes
                 Palau.UpdateNewTurn();
                 Console.WriteLine(Palau.printCountry());
             }
-            
+           // Console.WriteLine(Palau.printCountry());
+            Palau.BuyOil();
+            Palau.BuyMinerals();
+            Console.WriteLine(Palau.printCountry());
             Console.ReadLine();
         }
     }
